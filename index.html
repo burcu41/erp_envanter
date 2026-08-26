@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Envanter ve Stok Yönetim Paneli</title>
+</head>
+<body>
+
+    <!-- Üst Başlık ve Navigasyon -->
+    <header>
+        <h1>ERP Envanter & Stok Yönetim Sistemi</h1>
+        <nav>
+            <ul>
+                <li><a href="#envanter-listesi">Envanter Listesi</a></li>
+                <li><a href="#yeni-urun">Yeni Ürün Ekle</a></li>
+                <li><a href="#stok-guncelle">Stok Güncelle</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <!-- 1. Bölüm: Envanter Listesi -->
+        <section id="envanter-listesi">
+            <h2>Mevcut Envanter Listesi</h2>
+            
+            <!-- border, cellpadding ve cellspacing ile saf HTML tablo düzeni -->
+            <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <thead>
+                    <tr bgcolor="#f2f2f2">
+                        <th align="center">Ürün ID</th>
+                        <th align="left">Ürün Adı</th>
+                        <th align="left">Kategori</th>
+                        <th align="center">Stok Adedi</th>
+                        <th align="center">Kritik Stok Seviyesi</th>
+                        <th align="center">Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="center">101</td>
+                        <td>Endüstriyel Dokunmatik Ekran 15"</td>
+                        <td>Donanım</td>
+                        <td align="center">14</td>
+                        <td align="center">5</td>
+                        <td align="center">Normal</td>
+                    </tr>
+                    <tr>
+                        <td align="center">102</td>
+                        <td>Barkod Okuyucu El Terminali</td>
+                        <td>Çevre Birimleri</td>
+                        <td align="center">3</td>
+                        <td align="center">5</td>
+                        <td align="center"><strong>Kritik Seviye</strong></td>
+                    </tr>
+                    <tr>
+                        <td align="center">103</td>
+                        <td>TSC Barkod Yazıcı</td>
+                        <td>Yazıcılar</td>
+                        <td align="center">8</td>
+                        <td align="center">3</td>
+                        <td align="center">Normal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <br><hr><br>
+
+        <!-- 2. Bölüm: Yeni Ürün Ekleme Formu -->
+        <section id="yeni-urun">
+            <h2>Yeni Ürün Tanımlama</h2>
+            <form action="#" method="POST">
+                <p>
+                    <label for="urunAdi"><strong>Ürün Adı:</strong></label><br>
+                    <input type="text" id="urunAdi" name="urunAdi" placeholder="Örn: Barkod Okuyucu" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <label for="kategoriId"><strong>Kategori:</strong></label><br>
+                    <select id="kategoriId" name="kategoriId" style="width: 310px;" required>
+                        <option value="">Kategori Seçiniz</option>
+                        <option value="1">Dokunmatik Ekranlar</option>
+                        <option value="2">Yazıcılar</option>
+                        <option value="3">Barkod Okuyucular</option>
+                        <option value="4">Donanım & Parça</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="stokAdedi"><strong>Mevcut Stok Adedi:</strong></label><br>
+                    <input type="number" id="stokAdedi" name="stokAdedi" min="0" placeholder="0" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <label for="kritikStok"><strong>Kritik Stok Seviyesi:</strong></label><br>
+                    <input type="number" id="kritikStok" name="kritikStok" min="1" placeholder="Minimum stok eşiği" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <button type="submit">Ürünü Kaydet</button>
+                </p>
+            </form>
+        </section>
+
+        <br><hr><br>
+
+        <!-- 3. Bölüm: Hızlı Stok Güncelleme Ekranı -->
+        <section id="stok-guncelle">
+            <h2>Hızlı Stok Miktarı Güncelleme</h2>
+            <form action="#" method="POST">
+                <p>
+                    <label for="guncellenecekUrun"><strong>Ürün Seçiniz:</strong></label><br>
+                    <select id="guncellenecekUrun" name="guncellenecekUrun" style="width: 310px;" required>
+                        <option value="">Seçim Yapın</option>
+                        <option value="101">101 - Endüstriyel Dokunmatik Ekran 15"</option>
+                        <option value="102">102 - Barkod Okuyucu El Terminali</option>
+                        <option value="103">103 - TSC Barkod Yazıcı</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="islemTuru"><strong>İşlem Türü:</strong></label><br>
+                    <select id="islemTuru" name="islemTuru" style="width: 310px;" required>
+                        <option value="giris">Stok Girişi (+)</option>
+                        <option value="cikis">Stok Çıkışı (-)</option>
+                        <option value="dogrudan">Doğrudan Miktar Belirle</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="islemMiktari"><strong>Miktar:</strong></label><br>
+                    <input type="number" id="islemMiktari" name="islemMiktari" min="1" placeholder="Adet girin" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <button type="submit">Stoğu Güncelle</button>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <br><hr>
+
+
+</body>
+</html>
