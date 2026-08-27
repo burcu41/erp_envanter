@@ -117,7 +117,7 @@ tbody tr:hover {
     background-color: #f8fafc;
 }
 
-/* Durum Rozetleri */
+
 .badge-normal {
     background-color: var(--success-bg);
     color: var(--success-color);
@@ -139,7 +139,7 @@ tbody tr:hover {
 }
 
 
-/* --- Form Tasarımı (Düzenli 2'li Izgara) --- */
+
 form {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Yan yana eşit 2 sütun */
@@ -153,9 +153,9 @@ form > div {
     gap: 0.5rem;
 }
 
-/* Butonun alt satıra tam yerleşmesi için */
+
 form > div.form-actions {
-    grid-column: 1 / -1; /* Tüm satırı kapla */
+    grid-column: 1 / -1; 
     margin-top: 0.5rem;
 }
 
@@ -192,14 +192,14 @@ button[type="submit"] {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    align-self: flex-start; /* Buton gereksiz uzamasın */
+    align-self: flex-start; 
 }
 
 button[type="submit"]:hover {
     background-color: var(--primary-hover);
 }
 
-/* Mobil ekranlarda tek sütuna düşür */
+
 @media (max-width: 768px) {
     form {
         grid-template-columns: 1fr;
