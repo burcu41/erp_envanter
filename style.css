@@ -1,0 +1,207 @@
+
+:root {
+    --primary-color: #1e3a8a;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #475569;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-color: #0f172a;
+    --border-color: #e2e8f0;
+    --danger-color: #dc2626;
+    --danger-bg: #fee2e2;
+    --success-color: #16a34a;
+    --success-bg: #dcfce7;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --radius: 10px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+
+header {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    color: #ffffff;
+    padding: 1.2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+}
+
+header h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.2rem;
+}
+
+nav a {
+    color: #f1f5f9;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+
+main {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+section {
+    background-color: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+section h2 {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+}
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+th, td {
+    padding: 0.9rem 1.2rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+thead {
+    background-color: #f1f5f9;
+}
+
+th {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Durum Rozetleri */
+.badge-normal {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-critical {
+    background-color: var(--danger-bg);
+    color: var(--danger-color);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+
+/* --- Form Tasarımı (Düzenli 2'li Izgara) --- */
+form {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Yan yana eşit 2 sütun */
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Butonun alt satıra tam yerleşmesi için */
+form > div.form-actions {
+    grid-column: 1 / -1; /* Tüm satırı kapla */
+    margin-top: 0.5rem;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+input, select {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    background-color: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+}
+
+button[type="submit"] {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    align-self: flex-start; /* Buton gereksiz uzamasın */
+}
+
+button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Mobil ekranlarda tek sütuna düşür */
+@media (max-width: 768px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+}
