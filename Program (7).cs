@@ -1,0 +1,57 @@
+using Microsoft.Data.SqlClient;
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+var app = builder.Build();
+app.UseCors("AllowAll");
+
+var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+
+
+app.MapGet("/api/products", () =>
+{
+    var urunler = new List<object>();
+
+    using (var connection = new SqlConnection(connectionString))
+    {
+        connection.Open();
+        
+        var query = @"SELECT UrunID, UrunAdi, KategoriAdi, StokAdedi, 
+                             KritikStokSeviyesi, BirimFiyat, ToplamDeger, StokDurumu 
+                      FROM dbo.vw_EnvanterListesi ORDER BY UrunID ASC";
+
+        using (var command = new SqlCommand(query, connection))
+        using (var reader = command.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                urunler.Add(new
+                {
+                    urunID = reader.GetInt32(0),
+                    urunAdi = reader.GetString(1),
+                    kategoriAdi = reader.GetString(2),
+                    stokAdedi = reader.GetInt32(3),
+                    kritikStokSeviyesi = reader.GetInt32(4),
+                    birimFiyat = reader.GetDecimal(5),
+                    toplamDeger = reader.GetDecimal(6),
+                    stokDurumu = reader.GetString(7)
+                });
+            }
+        }
+    }
+
+    return Results.Ok(urunler);
+});
+
+app.MapGet("/", () => "ERP Envanter API Calisiyor!");
+
+app.Run();
