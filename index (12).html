@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Envanter ve Stok Yönetim Paneli</title>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=RboGrY_T9fpZ0z5mN2_-SRIdyLHmIMVA8Hsq0sZ-mQy594L5J2aRRDWP5XdpHo136lFoeEjLZB2L5GVGpoMbJlfUM2cr0n5EsVVIf5XezknoK0K1nhX42pbPxabZMmRPxI9cSws2Y1H1s23taey9GGVBU2y4x0G4120SxMFOcYRFljgMs2rujKre6UvsTzE8O1PFR0p2OrHzm76aKglfMXKO6ndGxBpG1OZySLpfYlOr58YCIMa2BFbktfUx8HD4aPCHsQo0saKSbBICVP7AtZfYOpCNtrXXINbBMAR46FCfIavHGIOHNwiI8HddQXznD_O04BdPQnj9ULvYyCgFtauUWQgSSkiniSQscGi7Z0uqwsq0gPTBl7jBnIHt4sk4AIXpOVejHrkK8tnIWhCy0InuC30Qzi3aHIgGarCCb_ZaF-fBzg-kOz6rtCuGoi9FjONBAOCM6GRC9nZzBvxngPmZ0hkBr10Sz5euEo2JFFe-2Sthpsc95JZpweMrmTM8wC2E2WSa8EWI7PeH0j-OY7TTYiPloKs8xjjQ21AacgVnimWGo3UperBg5m8CR8FWUHeIi7_BkaW_cujhBYRS0U2cCEtKf2mb2QA59RUqCfGeQO-2drhy3zi4Oj2nXi6kuSCQAmj53MnUU4FxQgWJpgIDfFP0PoY5K1yvfQMo3hcuShK8ZOZVeJKw9fYQ8xokCD1QBa-qUUOdt3DYase_POxRjDUNaEJyz6M2dj-w2pv-CWcj7WqjzbQpewTgFzf2ki3YWnWcgr0blECIxEcryuKqlWgCchTMgRC4vJXCgDuBFe4ylPx3AW4lcOAy4s5Xlbk-ttyZSvMKOBdWU_LO0O0NM97vMNWBLhZLGV5ZjZkZUQfNwJuiR6zLSPk2hgDZwwPvCFrrnEGFS0_oOtjm-eEMKLUp1s7XG3GS3n9NUPkJnBbU_trmgeISouktUrP3s5jNxQ-u2tNkXH6XZurYrKGpH24_snGa0JXdz3oRNHIYDvOUDWw-JULkalJ6SPf0qGioT52Nevk6AxTMYjDZ9QOh2w1bQPUEsaf87EjPzpEyxCWRAVX5alJ41MooxhXMVv_7aCGJ53mi4a30qjcsbhH8GyKPfRHdLxkPSdxD_CiJKyGAr8v4ghjRACt_p_tPQvhDIs27tG5-pKFzmxF89OQymOc-n_9bPtEMG9LW5kXhho36_fVfliy0ydCOLTYKA5Gd234GYTNct6i12uIgAp3qrgg0xlwylT235rb3ihqjD-zDo5lseht3Q-uL3F4Z2_PIJFxN8VhhPoY2Vo5SKuekrX-RsXvMJzU7mT33BV0n2NgN4jYcCjnkUtHVVvsIhqlChSpCMH7e-Z81P5vn63JkecNfuLguyvRhVshAcPJUci6g8EQE82GQ8QbvgYQ3glFqtvNyC4IZX40ME72BmbO233gWQEPbT2SThzvoaQcr39CcUEth0v31VZX1Hl5EsMln7-ptdVhduPHBJXusyb4jNvJy9OT4OC-q-lu__F3ftQZGf5zF7muo4UwzTrj4ApuEivACEVuQSOnDXKYcv283I5eA-9geqmYlzSb0JgqmyqxlyUfDVKgl7iYLlB8um1pdNO8AtZO-kxisuh3S0IoBOX6I7Wghwb3ytsgpmNugp6FCQ8bpwe4f4r__yKj4xHBwTm8ZocICUB62bIdZFq5HYQsBSoP5BikzHJmnoe7ZkC2B7tNwTbYC6s3Eo7wr6Zz4tG1uys7ee8I9g8qbaIo3TuFq_Rt6VnoVNTb9mJqfXtslT_kQBULL74hEbl7IKlznhBfkwGydg80yeFvOMA" nonce="fc19fccb51c1b1cd2736663c54fc4793" charset="UTF-8"></script></head>
+<body>
+
+  
+    <header>
+        <h1>ERP Envanter & Stok Yönetim Sistemi</h1>
+        <nav>
+            <ul>
+                <li><a href="#envanter-listesi">Envanter Listesi</a></li>
+                <li><a href="#yeni-urun">Yeni Ürün Ekle</a></li>
+                <li><a href="#stok-guncelle">Stok Güncelle</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+     
+        <section id="envanter-listesi">
+            <h2>Mevcut Envanter Listesi</h2>
+            
+            <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Ürün ID</th>
+                        <th>Ürün Adı</th>
+                        <th>Kategori</th>
+                        <th>Durum</th>
+                        <th>Kritik Stok Seviyesi</th>
+                        <th>Birim Fiyat</th>
+                        <th>Toplam Değer</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+            </table>
+        </section>
+
+        <br><hr><br>
+
+    >
+        <section id="yeni-urun">
+            <h2>Yeni Ürün Tanımlama</h2>
+            <form id="yeniUrunFormu">
+                <p>
+                    <label for="urunAdi"><strong>Ürün Adı:</strong></label><br>
+                    <input type="text" id="urunAdi" name="urunAdi" placeholder="Örn: Barkod Okuyucu" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <label for="kategoriId"><strong>Kategori:</strong></label><br>
+                    <select id="kategoriId" name="kategoriId" style="width: 310px;" required>
+                        <option value="">Kategori Seçiniz</option>
+                        <option value="1">Dokunmatik Ekranlar</option>
+                        <option value="2">Yazıcılar</option>
+                        <option value="3">Barkod Okuyucular</option>
+                        <option value="4">Donanım & Parça</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="birimFiyat"><strong>Birim Fiyat (TL):</strong></label><br>
+                    <input type="number" id="birimFiyat" name="birimFiyat" step="0.01" min="0" placeholder="Örn: 2500.00" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <label for="stokAdedi"><strong>Mevcut Stok Adedi:</strong></label><br>
+                    <input type="number" id="stokAdedi" name="stokAdedi" min="0" placeholder="0" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <label for="kritikStok"><strong>Kritik Stok Seviyesi:</strong></label><br>
+                    <input type="number" id="kritikStok" name="kritikStok" min="1" placeholder="Minimum stok eşiği" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <button type="submit" style="background-color: #0d6efd; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Ürünü Kaydet</button>
+                </p>
+            </form>
+        </section>
+
+        <br><hr><br>
+
+        
+        <section id="stok-guncelle">
+            <h2>Hızlı Stok Miktarı Güncelleme</h2>
+            <form action="#" method="POST">
+                <p>
+                    <label for="guncellenecekUrun"><strong>Ürün Seçiniz:</strong></label><br>
+                    <select id="guncellenecekUrun" name="guncellenecekUrun" style="width: 310px;" required>
+                        <option value="">Seçim Yapın</option>
+                        <option value="101">101 - Endüstriyel Dokunmatik Ekran 15"</option>
+                        <option value="102">102 - Barkod Okuyucu El Terminali</option>
+                        <option value="103">103 - TSC Barkod Yazıcı</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="islemTuru"><strong>İşlem Türü:</strong></label><br>
+                    <select id="islemTuru" name="islemTuru" style="width: 310px;" required>
+                        <option value="giris">Stok Girişi (+)</option>
+                        <option value="cikis">Stok Çıkışı (-)</option>
+                        <option value="dogrudan">Doğrudan Miktar Belirle</option>
+                    </select>
+                </p>
+
+                <p>
+                    <label for="islemMiktari"><strong>Miktar:</strong></label><br>
+                    <input type="number" id="islemMiktari" name="islemMiktari" min="1" placeholder="Adet girin" style="width: 300px;" required>
+                </p>
+
+                <p>
+                    <button type="submit">Stoğu Güncelle</button>
+                </p>
+            </form>
+        </section>
+    </main>
+
+    <br><hr>
+
+<script>
+  // Terminalinde çalışan port adresi (Port: 5134)
+  const API_URL = 'http://localhost:5134/api/products';
+
+
+  async function envanteriGetir() {
+    try {
+      const yanit = await fetch(API_URL);
+      const urunler = await yanit.json();
+
+      const tabloGovdesi = document.querySelector('tbody');
+      if (!tabloGovdesi) return;
+
+      tabloGovdesi.innerHTML = '';
+
+      urunler.forEach(urun => {
+        const satir = document.createElement('tr');
+
+       
+        const durumRozeti = urun.stokDurumu === 'Kritik Stok Uyarısı'
+          ? `<span style="color: #dc3545; font-weight: bold; background: #ffe6e6; padding: 2px 6px; border-radius: 4px;">⚠️ Kritik (${urun.stokAdedi})</span>`
+          : `<span style="color: #198754; background: #e8f5e9; padding: 2px 6px; border-radius: 4px;">Yeterli (${urun.stokAdedi})</span>`;
+
+        satir.innerHTML = `
+          <td>${urun.urunID}</td>
+          <td><strong>${urun.urunAdi}</strong></td>
+          <td>${urun.kategoriAdi}</td>
+          <td>${durumRozeti}</td>
+          <td>${urun.kritikStokSeviyesi}</td>
+          <td>${Number(urun.birimFiyat).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
+          <td>${Number(urun.toplamDeger).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
+          <td>
+            <button onclick="urunSil(${urun.urunID})" style="background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sil</button>
+          </td>
+        `;
+        tabloGovdesi.appendChild(satir);
+      });
+    } catch (hata) {
+      console.error('Listeleme hatası:', hata);
+    }
+  }
+
+  async function urunSil(id) {
+    if (!confirm(`${id} ID'li ürünü envanterden silmek istediğinize emin misiniz?`)) return;
+
+    try {
+      const yanit = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      const sonuc = await yanit.json();
+
+      if (sonuc.success) {
+        alert('Ürün başarıyla silindi!');
+        envanteriGetir(); // Tabloyu anında güncelle
+      } else {
+        alert('Hata: ' + sonuc.message);
+      }
+    } catch (hata) {
+      console.error('Silme hatası:', hata);
+    }
+  }
+
+  const form = document.querySelector('#yeniUrunFormu');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+     
+      const yeniUrun = {
+        urunAdi: document.querySelector('#urunAdi').value,
+        kategoriID: parseInt(document.querySelector('#kategoriId').value),
+        birimFiyat: parseFloat(document.querySelector('#birimFiyat').value),
+        stokAdedi: parseInt(document.querySelector('#stokAdedi').value),
+        kritikStokSeviyesi: parseInt(document.querySelector('#kritikStok').value)
+      };
+
+      try {
+        const yanit = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(yeniUrun)
+        });
+        const sonuc = await yanit.json();
+
+        if (sonuc.success) {
+          alert('Yeni ürün başarıyla eklendi!');
+          form.reset();
+          envanteriGetir(); 
+        } else {
+          alert('Hata: ' + sonuc.message);
+        }
+      } catch (hata) {
+        console.error('Ekleme hatası:', hata);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', envanteriGetir);
+</script>
+
+</body>
+</html>
