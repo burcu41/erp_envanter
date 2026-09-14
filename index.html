@@ -1,20 +1,107 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ERP Envanter ve Stok Yönetim Paneli</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 8% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .stok-btn {
+            padding: 3px 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #f8f9fa;
+        }
+        .stok-btn:hover { background: #e2e6ea; }
+
+       
+        .filtre-alani {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+      
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid #0d6efd;
+        }
+        .stat-card.warning { border-left-color: #dc3545; }
+        .stat-card.success { border-left-color: #198754; }
+        .stat-card.info { border-left-color: #0dcaf0; }
+        .stat-title {
+            font-size: 13px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #212529;
+        }
+        /* 14. GÜN: Kritik Stok Uyarı Barı ve Satır Vurgulama */
+        .alert-banner {
+            display: none;
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .satir-kritik {
+            background-color: #fff2f2 !important;
+        }
+        .satir-kritik:hover {
+            background-color: #ffe6e6 !important;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Üst Başlık ve Navigasyon -->
     <header>
         <h1>ERP Envanter & Stok Yönetim Sistemi</h1>
         <nav>
             <ul>
                 <li><a href="#envanter-listesi">Envanter Listesi</a></li>
                 <li><a href="#yeni-urun">Yeni Ürün Ekle</a></li>
-                <li><a href="#stok-guncelle">Stok Güncelle</a></li>
             </ul>
         </nav>
     </header>
@@ -22,128 +109,446 @@
     <hr>
 
     <main>
+        <!-- 14. GÜN: KRİTİK STOK DİNAMİK UYARI BARI -->
+        <div id="kritikStokUyariBari" class="alert-banner">
+            <div>
+                <strong>🚨 DİKKAT:</strong> Depoda kritik stok seviyesine düşmüş <span id="kritikSayiVurgu" style="font-weight: bold; text-decoration: underline;">0</span> adet ürün bulunmaktadır! Lütfen acil tedarik sağlayınız.
+            </div>
+            <button onclick="document.querySelector('#kritikStokUyariBari').style.display='none'" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #842029; font-weight: bold;">✕</button>
+        </div>
         <!-- 1. Bölüm: Envanter Listesi -->
         <section id="envanter-listesi">
+          <!-- 12. GÜN: DASHBOARD SAYAÇ KARTLARI -->
+            <h2>Depo Durum Özeti (Dashboard)</h2>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-title">📦 Toplam Ürün Çeşidi</div>
+                    <div class="stat-value" id="kartToplamCesit">0</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-title">📊 Toplam Stok Adedi</div>
+                    <div class="stat-value" id="kartToplamStok">0</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-title">💰 Toplam Envanter Değeri</div>
+                    <div class="stat-value" id="kartToplamDeger">₺0,00</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-title">⚠️ Kritik Stoktaki Ürünler</div>
+                    <div class="stat-value" id="kartKritikStok" style="color: #dc3545;">0</div>
+                </div>
+            </div>
             <h2>Mevcut Envanter Listesi</h2>
             
-            <!-- border, cellpadding ve cellspacing ile saf HTML tablo düzeni -->
+         
+            <div class="filtre-alani">
+                <div>
+                    <label for="aramaKutusu"><strong>🔍 Ürün Ara:</strong></label><br>
+                    <input type="text" id="aramaKutusu" placeholder="Ürün adına göre ara..." style="padding: 6px 10px; width: 250px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+
+                <div>
+                    <label for="filtreKategori"><strong>📁 Kategoriye Göre:</strong></label><br>
+                    <select id="filtreKategori" style="padding: 6px 10px; width: 220px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">Tüm Kategoriler</option>
+                    </select>
+                </div>
+
+                <div style="margin-top: 18px;">
+                    <button type="button" onclick="filtreleriTemizle()" style="padding: 6px 14px; cursor: pointer; border: 1px solid #6c757d; background: #6c757d; color: white; border-radius: 4px; font-weight: bold;">Filtreleri Temizle</button>
+                </div>
+            </div>
+
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
                 <thead>
-                    <tr bgcolor="#f2f2f2">
-                        <th align="center">Ürün ID</th>
-                        <th align="left">Ürün Adı</th>
-                        <th align="left">Kategori</th>
-                        <th align="center">Stok Adedi</th>
-                        <th align="center">Kritik Stok Seviyesi</th>
-                        <th align="center">Durum</th>
+                    <tr>
+                        <th>Ürün ID</th>
+                        <th>Ürün Adı</th>
+                        <th>Kategori</th>
+                        <th>Hızlı Stok (+ / -)</th>
+                        <th>Durum</th>
+                        <th>Kritik Eşik</th>
+                        <th>Birim Fiyat</th>
+                        <th>Toplam Değer</th>
+                        <th>İşlemler</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td align="center">101</td>
-                        <td>Endüstriyel Dokunmatik Ekran 15"</td>
-                        <td>Donanım</td>
-                        <td align="center">14</td>
-                        <td align="center">5</td>
-                        <td align="center">Normal</td>
-                    </tr>
-                    <tr>
-                        <td align="center">102</td>
-                        <td>Barkod Okuyucu El Terminali</td>
-                        <td>Çevre Birimleri</td>
-                        <td align="center">3</td>
-                        <td align="center">5</td>
-                        <td align="center"><strong>Kritik Seviye</strong></td>
-                    </tr>
-                    <tr>
-                        <td align="center">103</td>
-                        <td>TSC Barkod Yazıcı</td>
-                        <td>Yazıcılar</td>
-                        <td align="center">8</td>
-                        <td align="center">3</td>
-                        <td align="center">Normal</td>
-                    </tr>
+                <tbody id="envanterTabloGovdesi">
+                  
                 </tbody>
             </table>
         </section>
 
         <br><hr><br>
 
-        <!-- 2. Bölüm: Yeni Ürün Ekleme Formu -->
+      
         <section id="yeni-urun">
             <h2>Yeni Ürün Tanımlama</h2>
-            <form action="#" method="POST">
+            <form id="yeniUrunFormu">
                 <p>
                     <label for="urunAdi"><strong>Ürün Adı:</strong></label><br>
-                    <input type="text" id="urunAdi" name="urunAdi" placeholder="Örn: Barkod Okuyucu" style="width: 300px;" required>
+                    <input type="text" id="urunAdi" placeholder="Örn: Barkod Okuyucu" style="width: 300px;" required>
                 </p>
-
                 <p>
                     <label for="kategoriId"><strong>Kategori:</strong></label><br>
-                    <select id="kategoriId" name="kategoriId" style="width: 310px;" required>
-                        <option value="">Kategori Seçiniz</option>
-                        <option value="1">Dokunmatik Ekranlar</option>
-                        <option value="2">Yazıcılar</option>
-                        <option value="3">Barkod Okuyucular</option>
-                        <option value="4">Donanım & Parça</option>
+                    <select id="kategoriId" style="width: 310px;" required>
+                        <option value="">Kategoriler Yükleniyor...</option>
                     </select>
                 </p>
-
+                <p>
+                    <label for="birimFiyat"><strong>Birim Fiyat (TL):</strong></label><br>
+                    <input type="number" id="birimFiyat" step="0.01" min="0" placeholder="2500.00" style="width: 300px;" required>
+                </p>
                 <p>
                     <label for="stokAdedi"><strong>Mevcut Stok Adedi:</strong></label><br>
-                    <input type="number" id="stokAdedi" name="stokAdedi" min="0" placeholder="0" style="width: 300px;" required>
+                    <input type="number" id="stokAdedi" min="0" placeholder="0" style="width: 300px;" required>
                 </p>
-
                 <p>
                     <label for="kritikStok"><strong>Kritik Stok Seviyesi:</strong></label><br>
-                    <input type="number" id="kritikStok" name="kritikStok" min="1" placeholder="Minimum stok eşiği" style="width: 300px;" required>
+                    <input type="number" id="kritikStok" min="1" placeholder="3" style="width: 300px;" required>
                 </p>
-
                 <p>
-                    <button type="submit">Ürünü Kaydet</button>
-                </p>
-            </form>
-        </section>
-
-        <br><hr><br>
-
-        <!-- 3. Bölüm: Hızlı Stok Güncelleme Ekranı -->
-        <section id="stok-guncelle">
-            <h2>Hızlı Stok Miktarı Güncelleme</h2>
-            <form action="#" method="POST">
-                <p>
-                    <label for="guncellenecekUrun"><strong>Ürün Seçiniz:</strong></label><br>
-                    <select id="guncellenecekUrun" name="guncellenecekUrun" style="width: 310px;" required>
-                        <option value="">Seçim Yapın</option>
-                        <option value="101">101 - Endüstriyel Dokunmatik Ekran 15"</option>
-                        <option value="102">102 - Barkod Okuyucu El Terminali</option>
-                        <option value="103">103 - TSC Barkod Yazıcı</option>
-                    </select>
-                </p>
-
-                <p>
-                    <label for="islemTuru"><strong>İşlem Türü:</strong></label><br>
-                    <select id="islemTuru" name="islemTuru" style="width: 310px;" required>
-                        <option value="giris">Stok Girişi (+)</option>
-                        <option value="cikis">Stok Çıkışı (-)</option>
-                        <option value="dogrudan">Doğrudan Miktar Belirle</option>
-                    </select>
-                </p>
-
-                <p>
-                    <label for="islemMiktari"><strong>Miktar:</strong></label><br>
-                    <input type="number" id="islemMiktari" name="islemMiktari" min="1" placeholder="Adet girin" style="width: 300px;" required>
-                </p>
-
-                <p>
-                    <button type="submit">Stoğu Güncelle</button>
+                    <button type="submit" style="background-color: #0d6efd; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Ürünü Kaydet</button>
                 </p>
             </form>
         </section>
     </main>
 
-    <br><hr>
+   
+    <div id="duzenleModal" class="modal">
+        <div class="modal-content">
+            <h3>Ürün Bilgilerini Düzenle</h3>
+            <form id="modalDuzenleFormu">
+                <input type="hidden" id="editUrunId">
+                <p>
+                    <label><strong>Ürün Adı:</strong></label><br>
+                    <input type="text" id="editUrunAdi" style="width: 95%;" required>
+                </p>
+                <p>
+                    <label><strong>Birim Fiyat (TL):</strong></label><br>
+                    <input type="number" id="editBirimFiyat" step="0.01" style="width: 95%;" required>
+                </p>
+                <p>
+                    <label><strong>Stok Adedi:</strong></label><br>
+                    <input type="number" id="editStokAdedi" style="width: 95%;" required>
+                </p>
+                <p>
+                    <label><strong>Kritik Stok Eşiği:</strong></label><br>
+                    <input type="number" id="editKritikStok" style="width: 95%;" required>
+                </p>
+                <div style="text-align: right; margin-top: 15px;">
+                    <button type="button" onclick="modalKapat()" style="padding: 6px 12px; margin-right: 8px; cursor: pointer;">İptal</button>
+                    <button type="submit" style="background-color: #ffc107; color: black; border: none; padding: 6px 14px; border-radius: 4px; font-weight: bold; cursor: pointer;">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+  const API_BASE = 'http://localhost:5134/api';
+  let tumUrunler = []; 
+// 12. GÜN: Dashboard Verilerini Çek ve Kartlara Bas
+  async function dashboardVerileriniGetir() {
+    try {
+      const yanit = await fetch(`${API_BASE}/dashboard`);
+      const data = await yanit.json();
+
+      const toplamCesit = data.toplamUrunCesidi ?? data.ToplamUrunCesidi ?? 0;
+      const toplamStok = data.toplamStokAdedi ?? data.ToplamStokAdedi ?? 0;
+      const toplamDeger = data.toplamEnvanterDegeri ?? data.ToplamEnvanterDegeri ?? 0;
+      const kritikStok = data.kritikUrunSayisi ?? data.KritikUrunSayisi ?? 0;
+
+      document.querySelector('#kartToplamCesit').textContent = toplamCesit;
+      document.querySelector('#kartToplamStok').textContent = Number(toplamStok).toLocaleString('tr-TR');
+      document.querySelector('#kartToplamDeger').textContent = Number(toplamDeger).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+      document.querySelector('#kartKritikStok').textContent = kritikStok;
+    } catch (hata) {
+      console.error('Dashboard çekme hatası:', hata);
+    }
+  }
+ 
+  async function envanteriGetir() {
+    try {
+      const yanit = await fetch(`${API_BASE}/products`);
+      tumUrunler = await yanit.json();
+      tabloyuEkranaBas(tumUrunler);
+      dashboardVerileriniGetir(); // <-- Tablo yenilendikçe kartları da anlık yeniler
+    } catch (hata) {
+      console.error('Listeleme hatası:', hata);
+    }
+  }
+  // 14. GÜN: Tabloyu Ekrana Basma & Kritik Stokları Kırmızıyla Vurgulama
+  function tabloyuEkranaBas(liste) {
+    const tabloGovdesi = document.querySelector('#envanterTabloGovdesi');
+    const uyariBari = document.querySelector('#kritikStokUyariBari');
+    const uyariSayi = document.querySelector('#kritikSayiVurgu');
+    
+    if (!tabloGovdesi) return;
+    tabloGovdesi.innerHTML = '';
+
+    if (liste.length === 0) {
+      tabloGovdesi.innerHTML = `<tr><td colspan="9" align="center" style="color: #6c757d; padding: 20px;">Aramanıza uygun ürün bulunamadı.</td></tr>`;
+      if (uyariBari) uyariBari.style.display = 'none';
+      return;
+    }
+
+    // 14. Gün: Kritik stokta kaç ürün var say ve uyarı barını yönet
+    let kritikUrunAdedi = 0;
+
+    liste.forEach(urun => {
+      const satir = document.createElement('tr');
+
+      // ÖDEV ŞARTI: Stok kritik eşiğe eşit veya altındaysa
+      const isKritik = urun.stokAdedi <= urun.kritikStokSeviyesi;
+
+      if (isKritik) {
+        kritikUrunAdedi++;
+        satir.classList.add('satir-kritik'); // Satırı kırmızı tonuyla boya
+      }
+
+      const durumRozeti = isKritik
+        ? `<span style="color: #dc3545; font-weight: bold; background: #ffe6e6; padding: 3px 8px; border-radius: 4px; border: 1px solid #f5c2c7;">⚠️ Kritik Stok</span>`
+        : `<span style="color: #198754; background: #e8f5e9; padding: 3px 8px; border-radius: 4px;">Yeterli</span>`;
+
+      satir.innerHTML = `
+        <td>${urun.urunID}</td>
+        <td><strong>${urun.urunAdi}</strong></td>
+        <td>${urun.kategoriAdi}</td>
+        <td>
+          <button class="stok-btn" onclick="hizliStokDegistir(${urun.urunID}, -1)">➖</button>
+          <strong style="margin: 0 8px; font-size: 15px; color: ${isKritik ? '#dc3545' : '#212529'};">${urun.stokAdedi}</strong>
+          <button class="stok-btn" onclick="hizliStokDegistir(${urun.urunID}, 1)">➕</button>
+        </td>
+        <td>${durumRozeti}</td>
+        <td>${urun.kritikStokSeviyesi}</td>
+        <td>${Number(urun.birimFiyat).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
+        <td>${Number(urun.toplamDeger).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
+        <td>
+          <button onclick="duzenleModalAc(${urun.urunID})" style="background-color: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px;">Düzenle</button>
+          <button onclick="urunSil(${urun.urunID})" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sil</button>
+        </td>
+      `;
+      tabloGovdesi.appendChild(satir);
+    });
+
+    // Kritik ürün varsa üstteki kırmızı uyarı barını göster, yoksa gizle
+    if (uyariBari && uyariSayi) {
+      if (kritikUrunAdedi > 0) {
+        uyariSayi.textContent = kritikUrunAdedi;
+        uyariBari.style.display = 'flex';
+      } else {
+        uyariBari.style.display = 'none';
+      }
+    }
+  }  function filtreUygula() {
+    const aramaMetni = document.querySelector('#aramaKutusu').value.toLowerCase().trim();
+    const secilenKategori = document.querySelector('#filtreKategori').value;
+
+    const filtrelenmis = tumUrunler.filter(urun => {
+      const isimUyuyor = urun.urunAdi.toLowerCase().includes(aramaMetni);
+      const kategoriUyuyor = secilenKategori === '' || urun.kategoriAdi === secilenKategori;
+      return isimUyuyor && kategoriUyuyor;
+    });
+
+    tabloyuEkranaBas(filtrelenmis);
+  }
+
+ 
+  function filtreleriTemizle() {
+    document.querySelector('#aramaKutusu').value = '';
+    document.querySelector('#filtreKategori').value = '';
+    tabloyuEkranaBas(tumUrunler);
+  }
+
+ 
+  document.querySelector('#aramaKutusu').addEventListener('input', filtreUygula);
+  document.querySelector('#filtreKategori').addEventListener('change', filtreUygula);
 
 
+  async function kategorileriGetir() {
+    try {
+      const yanit = await fetch(`${API_BASE}/categories`);
+      const kategoriler = await yanit.json();
+      
+      const formSelect = document.querySelector('#kategoriId');
+      const filtreSelect = document.querySelector('#filtreKategori');
+
+      if (formSelect) formSelect.innerHTML = '<option value="">Kategori Seçiniz</option>';
+      if (filtreSelect) filtreSelect.innerHTML = '<option value="">Tüm Kategoriler</option>';
+
+      kategoriler.forEach(k => {
+       
+        if (formSelect) {
+          const optForm = document.createElement('option');
+          optForm.value = k.kategoriID;
+          optForm.textContent = k.kategoriAdi;
+          formSelect.appendChild(optForm);
+        }
+
+       
+        if (filtreSelect) {
+          const optFiltre = document.createElement('option');
+          optFiltre.value = k.kategoriAdi;
+          optFiltre.textContent = k.kategoriAdi;
+          filtreSelect.appendChild(optFiltre);
+        }
+      });
+    } catch (hata) {
+      console.error('Kategori çekme hatası:', hata);
+    }
+  }
+
+ 
+  async function hizliStokDegistir(id, degisim) {
+    try {
+      await fetch(`${API_BASE}/products/${id}/stock?degisim=${degisim}`, { method: 'PATCH' });
+      await envanteriGetir();
+      filtreUygula();
+    } catch (hata) {
+      console.error('Stok değişim hatası:', hata);
+    }
+  }
+
+
+  function duzenleModalAc(id) {
+    const urun = tumUrunler.find(u => u.urunID === id);
+    if (!urun) return;
+
+    document.querySelector('#editUrunId').value = urun.urunID;
+    document.querySelector('#editUrunAdi').value = urun.urunAdi;
+    document.querySelector('#editBirimFiyat').value = urun.birimFiyat;
+    document.querySelector('#editStokAdedi').value = urun.stokAdedi;
+    document.querySelector('#editKritikStok').value = urun.kritikStokSeviyesi;
+    document.querySelector('#duzenleModal').style.display = 'block';
+  }
+
+  function modalKapat() {
+    document.querySelector('#duzenleModal').style.display = 'none';
+  }
+
+  // 13. GÜN: Modal Ürün Güncelleme Validasyonu
+document.querySelector('#modalDuzenleFormu').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const urunID = parseInt(document.querySelector('#editUrunId').value);
+    const urunAdi = document.querySelector('#editUrunAdi').value.trim();
+    const birimFiyat = parseFloat(document.querySelector('#editBirimFiyat').value);
+    const stokAdedi = parseInt(document.querySelector('#editStokAdedi').value);
+    const kritikStokSeviyesi = parseInt(document.querySelector('#editKritikStok').value);
+
+    // Kontroller: Hatalıysa durdur ve uyar
+    if (urunAdi.length < 2) {
+        alert('Hata: Ürün adı en az 2 harf olmalı!');
+        return;
+    }
+    if (isNaN(birimFiyat) || birimFiyat <= 0) {
+        alert('Hata: Fiyat 0 veya eksi olamaz!');
+        return;
+    }
+    if (isNaN(stokAdedi) || stokAdedi < 0) {
+        alert('Hata: Stok adedi eksi olamaz!');
+        return;
+    }
+    if (isNaN(kritikStokSeviyesi) || kritikStokSeviyesi < 1) {
+        alert('Hata: Kritik stok eşiği en az 1 olmalıdır!');
+        return;
+    }
+
+    const guncelVeri = { urunID, urunAdi, birimFiyat, stokAdedi, kritikStokSeviyesi };
+
+    try {
+        const yanit = await fetch(`${API_BASE}/products`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(guncelVeri)
+        });
+        const sonuc = await yanit.json();
+        if (sonuc.success) {
+            alert('Ürün başarıyla güncellendi!');
+            modalKapat();
+            await envanteriGetir();
+            filtreUygula();
+        } else {
+            alert('Sunucu Hatası: ' + sonuc.message);
+        }
+    } catch (hata) {
+        console.error('Güncelleme hatası:', hata);
+        alert('Sunucuya bağlanılamadı.');
+    }
+});
+
+  async function urunSil(id) {
+    if (!confirm(`${id} ID'li ürünü silmek istediğinize emin misiniz?`)) return;
+    try {
+      await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+      await envanteriGetir();
+      filtreUygula();
+    } catch (hata) {
+      console.error('Silme hatası:', hata);
+    }
+  }
+
+ 
+  // 13. GÜN: Yeni Ürün Ekleme Validasyonu (Güvenlik Kontrolü)
+document.querySelector('#yeniUrunFormu').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const urunAdi = document.querySelector('#urunAdi').value.trim();
+    const kategoriID = parseInt(document.querySelector('#kategoriId').value);
+    const birimFiyat = parseFloat(document.querySelector('#birimFiyat').value);
+    const stokAdedi = parseInt(document.querySelector('#stokAdedi').value);
+    const kritikStokSeviyesi = parseInt(document.querySelector('#kritikStok').value);
+
+    // Kontroller: Hatalıysa durdur ve uyar
+    if (urunAdi.length < 2) {
+        alert('Hata: Ürün adı en az 2 harf olmalı, boş bırakılamaz!');
+        return;
+    }
+    if (isNaN(kategoriID) || kategoriID <= 0) {
+        alert('Hata: Lütfen bir kategori seçiniz!');
+        return;
+    }
+    if (isNaN(birimFiyat) || birimFiyat <= 0) {
+        alert('Hata: Fiyat 0 veya eksi olamaz!');
+        return;
+    }
+    if (isNaN(stokAdedi) || stokAdedi < 0) {
+        alert('Hata: Stok adedi eksi (negatif) olamaz!');
+        return;
+    }
+    if (isNaN(kritikStokSeviyesi) || kritikStokSeviyesi < 1) {
+        alert('Hata: Kritik stok eşiği en az 1 olmalıdır!');
+        return;
+    }
+
+    const yeniUrun = { urunAdi, kategoriID, birimFiyat, stokAdedi, kritikStokSeviyesi };
+
+    try {
+        const yanit = await fetch(`${API_BASE}/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(yeniUrun)
+        });
+        const sonuc = await yanit.json();
+        if (sonuc.success) {
+            alert('Ürün başarıyla eklendi!');
+            document.querySelector('#yeniUrunFormu').reset();
+            await envanteriGetir();
+            filtreUygula();
+        } else {
+            alert('Sunucu Hatası: ' + sonuc.message);
+        }
+    } catch (hata) {
+        console.error('Ekleme hatası:', hata);
+        alert('Sunucuya bağlanılamadı.');
+    }
+});
+  document.addEventListener('DOMContentLoaded', () => {
+    envanteriGetir();
+    kategorileriGetir();
+    dashboardVerileriniGetir();
+  });
+  
+</script>
 </body>
 </html>
