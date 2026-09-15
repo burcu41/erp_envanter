@@ -144,18 +144,19 @@
             <div class="filtre-alani">
                 <div>
                     <label for="aramaKutusu"><strong>🔍 Ürün Ara:</strong></label><br>
-                    <input type="text" id="aramaKutusu" placeholder="Ürün adına göre ara..." style="padding: 6px 10px; width: 250px; border: 1px solid #ccc; border-radius: 4px;">
+                    <input type="text" id="aramaKutusu" placeholder="Ürün adına göre ara..." style="padding: 6px 10px; width: 220px; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
 
                 <div>
                     <label for="filtreKategori"><strong>📁 Kategoriye Göre:</strong></label><br>
-                    <select id="filtreKategori" style="padding: 6px 10px; width: 220px; border: 1px solid #ccc; border-radius: 4px;">
+                    <select id="filtreKategori" style="padding: 6px 10px; width: 200px; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="">Tüm Kategoriler</option>
                     </select>
                 </div>
 
-                <div style="margin-top: 18px;">
+                <div style="margin-top: 18px; display: flex; gap: 8px;">
                     <button type="button" onclick="filtreleriTemizle()" style="padding: 6px 14px; cursor: pointer; border: 1px solid #6c757d; background: #6c757d; color: white; border-radius: 4px; font-weight: bold;">Filtreleri Temizle</button>
+                    <button type="button" onclick="csvRaporIndir()" style="padding: 6px 14px; cursor: pointer; border: 1px solid #198754; background: #198754; color: white; border-radius: 4px; font-weight: bold;">📥 Envanter Raporu İndir (.csv)</button>
                 </div>
             </div>
 
@@ -363,6 +364,46 @@
  
   document.querySelector('#aramaKutusu').addEventListener('input', filtreUygula);
   document.querySelector('#filtreKategori').addEventListener('change', filtreUygula);
+     // 15. GÜN: Envanter Listesini CSV/Excel Formatında Dışa Aktarma
+  function csvRaporIndir() {
+    if (!tumUrunler || tumUrunler.length === 0) {
+      alert('İndirilecek envanter verisi bulunamadı!');
+      return;
+    }
+
+    // CSV Başlık Satırı (Noktalı virgül Excel ile tam uyumludur)
+    const basliklar = ['Ürün ID', 'Ürün Adı', 'Kategori', 'Stok Adedi', 'Kritik Eşik', 'Birim Fiyat (TL)', 'Toplam Değer (TL)', 'Stok Durumu'];
+    
+    const satirlar = tumUrunler.map(u => [
+      u.urunID,
+      `"${u.urunAdi.replace(/"/g, '""')}"`,
+      `"${u.kategoriAdi}"`,
+      u.stokAdedi,
+      u.kritikStokSeviyesi,
+      u.birimFiyat,
+      u.toplamDeger,
+      `"${u.stokDurumu}"`
+    ]);
+
+    // Başlık ve verileri CSV metnine dönüştürme
+    const csvIcerik = [
+      basliklar.join(';'),
+      ...satirlar.map(s => s.join(';'))
+    ].join('\r\n');
+
+    // UTF-8 BOM (\uFEFF) sayesinde Excel Türkçe karakterleri kusursuz açar
+    const blob = new Blob(['\uFEFF' + csvIcerik], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    const tarih = new Date().toISOString().slice(0, 10);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Envanter_Raporu_${tarih}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 
 
   async function kategorileriGetir() {
@@ -396,6 +437,7 @@
     } catch (hata) {
       console.error('Kategori çekme hatası:', hata);
     }
+ 
   }
 
  
