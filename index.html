@@ -32,7 +32,6 @@
         }
         .stok-btn:hover { background: #e2e6ea; }
 
-       
         .filtre-alani {
             display: flex;
             gap: 15px;
@@ -43,7 +42,7 @@
             border-radius: 6px;
             border: 1px solid #dee2e6;
         }
-      
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -73,7 +72,7 @@
             font-weight: bold;
             color: #212529;
         }
-        /* 14. GÜN: Kritik Stok Uyarı Barı ve Satır Vurgulama */
+
         .alert-banner {
             display: none;
             background-color: #f8d7da;
@@ -109,16 +108,16 @@
     <hr>
 
     <main>
-        <!-- 14. GÜN: KRİTİK STOK DİNAMİK UYARI BARI -->
+        <!-- KRİTİK STOK DİNAMİK UYARI BARI -->
         <div id="kritikStokUyariBari" class="alert-banner">
             <div>
                 <strong>🚨 DİKKAT:</strong> Depoda kritik stok seviyesine düşmüş <span id="kritikSayiVurgu" style="font-weight: bold; text-decoration: underline;">0</span> adet ürün bulunmaktadır! Lütfen acil tedarik sağlayınız.
             </div>
-            <button onclick="document.querySelector('#kritikStokUyariBari').style.display='none'" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #842029; font-weight: bold;">✕</button>
+            <button type="button" onclick="document.querySelector('#kritikStokUyariBari').style.display='none'" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #842029; font-weight: bold;">✕</button>
         </div>
-        <!-- 1. Bölüm: Envanter Listesi -->
+
+        <!-- 1. Bölüm: Envanter Listesi ve Dashboard -->
         <section id="envanter-listesi">
-          <!-- 12. GÜN: DASHBOARD SAYAÇ KARTLARI -->
             <h2>Depo Durum Özeti (Dashboard)</h2>
             <div class="dashboard-grid">
                 <div class="stat-card">
@@ -138,9 +137,9 @@
                     <div class="stat-value" id="kartKritikStok" style="color: #dc3545;">0</div>
                 </div>
             </div>
+
             <h2>Mevcut Envanter Listesi</h2>
             
-         
             <div class="filtre-alani">
                 <div>
                     <label for="aramaKutusu"><strong>🔍 Ürün Ara:</strong></label><br>
@@ -155,8 +154,8 @@
                 </div>
 
                 <div style="margin-top: 18px; display: flex; gap: 8px;">
-                    <button type="button" onclick="filtreleriTemizle()" style="padding: 6px 14px; cursor: pointer; border: 1px solid #6c757d; background: #6c757d; color: white; border-radius: 4px; font-weight: bold;">Filtreleri Temizle</button>
-                    <button type="button" onclick="csvRaporIndir()" style="padding: 6px 14px; cursor: pointer; border: 1px solid #198754; background: #198754; color: white; border-radius: 4px; font-weight: bold;">📥 Envanter Raporu İndir (.csv)</button>
+                    <button type="button" id="btnFiltreTemizle" style="padding: 6px 14px; cursor: pointer; border: 1px solid #6c757d; background: #6c757d; color: white; border-radius: 4px; font-weight: bold;">Filtreleri Temizle</button>
+                    <button type="button" id="btnCsvIndir" style="padding: 6px 14px; cursor: pointer; border: 1px solid #198754; background: #198754; color: white; border-radius: 4px; font-weight: bold;">📥 Envanter Raporu İndir (.csv)</button>
                 </div>
             </div>
 
@@ -175,14 +174,14 @@
                     </tr>
                 </thead>
                 <tbody id="envanterTabloGovdesi">
-                  
+                    <!-- Satırlar js/dom.js tarafından dinamik basılacak -->
                 </tbody>
             </table>
         </section>
 
         <br><hr><br>
 
-      
+        <!-- 2. Bölüm: Yeni Ürün Ekleme -->
         <section id="yeni-urun">
             <h2>Yeni Ürün Tanımlama</h2>
             <form id="yeniUrunFormu">
@@ -215,7 +214,7 @@
         </section>
     </main>
 
-   
+    <!-- Modal: Ürün Düzenleme -->
     <div id="duzenleModal" class="modal">
         <div class="modal-content">
             <h3>Ürün Bilgilerini Düzenle</h3>
@@ -238,359 +237,14 @@
                     <input type="number" id="editKritikStok" style="width: 95%;" required>
                 </p>
                 <div style="text-align: right; margin-top: 15px;">
-                    <button type="button" onclick="modalKapat()" style="padding: 6px 12px; margin-right: 8px; cursor: pointer;">İptal</button>
+                    <button type="button" id="btnModalIptal" style="padding: 6px 12px; margin-right: 8px; cursor: pointer;">İptal</button>
                     <button type="submit" style="background-color: #ffc107; color: black; border: none; padding: 6px 14px; border-radius: 4px; font-weight: bold; cursor: pointer;">Güncelle</button>
                 </div>
             </form>
         </div>
     </div>
 
-<script>
-  const API_BASE = 'http://localhost:5134/api';
-  let tumUrunler = []; 
-// 12. GÜN: Dashboard Verilerini Çek ve Kartlara Bas
-  async function dashboardVerileriniGetir() {
-    try {
-      const yanit = await fetch(`${API_BASE}/dashboard`);
-      const data = await yanit.json();
-
-      const toplamCesit = data.toplamUrunCesidi ?? data.ToplamUrunCesidi ?? 0;
-      const toplamStok = data.toplamStokAdedi ?? data.ToplamStokAdedi ?? 0;
-      const toplamDeger = data.toplamEnvanterDegeri ?? data.ToplamEnvanterDegeri ?? 0;
-      const kritikStok = data.kritikUrunSayisi ?? data.KritikUrunSayisi ?? 0;
-
-      document.querySelector('#kartToplamCesit').textContent = toplamCesit;
-      document.querySelector('#kartToplamStok').textContent = Number(toplamStok).toLocaleString('tr-TR');
-      document.querySelector('#kartToplamDeger').textContent = Number(toplamDeger).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
-      document.querySelector('#kartKritikStok').textContent = kritikStok;
-    } catch (hata) {
-      console.error('Dashboard çekme hatası:', hata);
-    }
-  }
- 
-  async function envanteriGetir() {
-    try {
-      const yanit = await fetch(`${API_BASE}/products`);
-      tumUrunler = await yanit.json();
-      tabloyuEkranaBas(tumUrunler);
-      dashboardVerileriniGetir(); // <-- Tablo yenilendikçe kartları da anlık yeniler
-    } catch (hata) {
-      console.error('Listeleme hatası:', hata);
-    }
-  }
-  // 14. GÜN: Tabloyu Ekrana Basma & Kritik Stokları Kırmızıyla Vurgulama
-  function tabloyuEkranaBas(liste) {
-    const tabloGovdesi = document.querySelector('#envanterTabloGovdesi');
-    const uyariBari = document.querySelector('#kritikStokUyariBari');
-    const uyariSayi = document.querySelector('#kritikSayiVurgu');
-    
-    if (!tabloGovdesi) return;
-    tabloGovdesi.innerHTML = '';
-
-    if (liste.length === 0) {
-      tabloGovdesi.innerHTML = `<tr><td colspan="9" align="center" style="color: #6c757d; padding: 20px;">Aramanıza uygun ürün bulunamadı.</td></tr>`;
-      if (uyariBari) uyariBari.style.display = 'none';
-      return;
-    }
-
-    // 14. Gün: Kritik stokta kaç ürün var say ve uyarı barını yönet
-    let kritikUrunAdedi = 0;
-
-    liste.forEach(urun => {
-      const satir = document.createElement('tr');
-
-      // ÖDEV ŞARTI: Stok kritik eşiğe eşit veya altındaysa
-      const isKritik = urun.stokAdedi <= urun.kritikStokSeviyesi;
-
-      if (isKritik) {
-        kritikUrunAdedi++;
-        satir.classList.add('satir-kritik'); // Satırı kırmızı tonuyla boya
-      }
-
-      const durumRozeti = isKritik
-        ? `<span style="color: #dc3545; font-weight: bold; background: #ffe6e6; padding: 3px 8px; border-radius: 4px; border: 1px solid #f5c2c7;">⚠️ Kritik Stok</span>`
-        : `<span style="color: #198754; background: #e8f5e9; padding: 3px 8px; border-radius: 4px;">Yeterli</span>`;
-
-      satir.innerHTML = `
-        <td>${urun.urunID}</td>
-        <td><strong>${urun.urunAdi}</strong></td>
-        <td>${urun.kategoriAdi}</td>
-        <td>
-          <button class="stok-btn" onclick="hizliStokDegistir(${urun.urunID}, -1)">➖</button>
-          <strong style="margin: 0 8px; font-size: 15px; color: ${isKritik ? '#dc3545' : '#212529'};">${urun.stokAdedi}</strong>
-          <button class="stok-btn" onclick="hizliStokDegistir(${urun.urunID}, 1)">➕</button>
-        </td>
-        <td>${durumRozeti}</td>
-        <td>${urun.kritikStokSeviyesi}</td>
-        <td>${Number(urun.birimFiyat).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
-        <td>${Number(urun.toplamDeger).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
-        <td>
-          <button onclick="duzenleModalAc(${urun.urunID})" style="background-color: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 5px;">Düzenle</button>
-          <button onclick="urunSil(${urun.urunID})" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sil</button>
-        </td>
-      `;
-      tabloGovdesi.appendChild(satir);
-    });
-
-    // Kritik ürün varsa üstteki kırmızı uyarı barını göster, yoksa gizle
-    if (uyariBari && uyariSayi) {
-      if (kritikUrunAdedi > 0) {
-        uyariSayi.textContent = kritikUrunAdedi;
-        uyariBari.style.display = 'flex';
-      } else {
-        uyariBari.style.display = 'none';
-      }
-    }
-  }  function filtreUygula() {
-    const aramaMetni = document.querySelector('#aramaKutusu').value.toLowerCase().trim();
-    const secilenKategori = document.querySelector('#filtreKategori').value;
-
-    const filtrelenmis = tumUrunler.filter(urun => {
-      const isimUyuyor = urun.urunAdi.toLowerCase().includes(aramaMetni);
-      const kategoriUyuyor = secilenKategori === '' || urun.kategoriAdi === secilenKategori;
-      return isimUyuyor && kategoriUyuyor;
-    });
-
-    tabloyuEkranaBas(filtrelenmis);
-  }
-
- 
-  function filtreleriTemizle() {
-    document.querySelector('#aramaKutusu').value = '';
-    document.querySelector('#filtreKategori').value = '';
-    tabloyuEkranaBas(tumUrunler);
-  }
-
- 
-  document.querySelector('#aramaKutusu').addEventListener('input', filtreUygula);
-  document.querySelector('#filtreKategori').addEventListener('change', filtreUygula);
-     // 15. GÜN: Envanter Listesini CSV/Excel Formatında Dışa Aktarma
-  function csvRaporIndir() {
-    if (!tumUrunler || tumUrunler.length === 0) {
-      alert('İndirilecek envanter verisi bulunamadı!');
-      return;
-    }
-
-    // CSV Başlık Satırı (Noktalı virgül Excel ile tam uyumludur)
-    const basliklar = ['Ürün ID', 'Ürün Adı', 'Kategori', 'Stok Adedi', 'Kritik Eşik', 'Birim Fiyat (TL)', 'Toplam Değer (TL)', 'Stok Durumu'];
-    
-    const satirlar = tumUrunler.map(u => [
-      u.urunID,
-      `"${u.urunAdi.replace(/"/g, '""')}"`,
-      `"${u.kategoriAdi}"`,
-      u.stokAdedi,
-      u.kritikStokSeviyesi,
-      u.birimFiyat,
-      u.toplamDeger,
-      `"${u.stokDurumu}"`
-    ]);
-
-    // Başlık ve verileri CSV metnine dönüştürme
-    const csvIcerik = [
-      basliklar.join(';'),
-      ...satirlar.map(s => s.join(';'))
-    ].join('\r\n');
-
-    // UTF-8 BOM (\uFEFF) sayesinde Excel Türkçe karakterleri kusursuz açar
-    const blob = new Blob(['\uFEFF' + csvIcerik], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    const tarih = new Date().toISOString().slice(0, 10);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Envanter_Raporu_${tarih}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
-
-  async function kategorileriGetir() {
-    try {
-      const yanit = await fetch(`${API_BASE}/categories`);
-      const kategoriler = await yanit.json();
-      
-      const formSelect = document.querySelector('#kategoriId');
-      const filtreSelect = document.querySelector('#filtreKategori');
-
-      if (formSelect) formSelect.innerHTML = '<option value="">Kategori Seçiniz</option>';
-      if (filtreSelect) filtreSelect.innerHTML = '<option value="">Tüm Kategoriler</option>';
-
-      kategoriler.forEach(k => {
-       
-        if (formSelect) {
-          const optForm = document.createElement('option');
-          optForm.value = k.kategoriID;
-          optForm.textContent = k.kategoriAdi;
-          formSelect.appendChild(optForm);
-        }
-
-       
-        if (filtreSelect) {
-          const optFiltre = document.createElement('option');
-          optFiltre.value = k.kategoriAdi;
-          optFiltre.textContent = k.kategoriAdi;
-          filtreSelect.appendChild(optFiltre);
-        }
-      });
-    } catch (hata) {
-      console.error('Kategori çekme hatası:', hata);
-    }
- 
-  }
-
- 
-  async function hizliStokDegistir(id, degisim) {
-    try {
-      await fetch(`${API_BASE}/products/${id}/stock?degisim=${degisim}`, { method: 'PATCH' });
-      await envanteriGetir();
-      filtreUygula();
-    } catch (hata) {
-      console.error('Stok değişim hatası:', hata);
-    }
-  }
-
-
-  function duzenleModalAc(id) {
-    const urun = tumUrunler.find(u => u.urunID === id);
-    if (!urun) return;
-
-    document.querySelector('#editUrunId').value = urun.urunID;
-    document.querySelector('#editUrunAdi').value = urun.urunAdi;
-    document.querySelector('#editBirimFiyat').value = urun.birimFiyat;
-    document.querySelector('#editStokAdedi').value = urun.stokAdedi;
-    document.querySelector('#editKritikStok').value = urun.kritikStokSeviyesi;
-    document.querySelector('#duzenleModal').style.display = 'block';
-  }
-
-  function modalKapat() {
-    document.querySelector('#duzenleModal').style.display = 'none';
-  }
-
-  // 13. GÜN: Modal Ürün Güncelleme Validasyonu
-document.querySelector('#modalDuzenleFormu').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const urunID = parseInt(document.querySelector('#editUrunId').value);
-    const urunAdi = document.querySelector('#editUrunAdi').value.trim();
-    const birimFiyat = parseFloat(document.querySelector('#editBirimFiyat').value);
-    const stokAdedi = parseInt(document.querySelector('#editStokAdedi').value);
-    const kritikStokSeviyesi = parseInt(document.querySelector('#editKritikStok').value);
-
-    // Kontroller: Hatalıysa durdur ve uyar
-    if (urunAdi.length < 2) {
-        alert('Hata: Ürün adı en az 2 harf olmalı!');
-        return;
-    }
-    if (isNaN(birimFiyat) || birimFiyat <= 0) {
-        alert('Hata: Fiyat 0 veya eksi olamaz!');
-        return;
-    }
-    if (isNaN(stokAdedi) || stokAdedi < 0) {
-        alert('Hata: Stok adedi eksi olamaz!');
-        return;
-    }
-    if (isNaN(kritikStokSeviyesi) || kritikStokSeviyesi < 1) {
-        alert('Hata: Kritik stok eşiği en az 1 olmalıdır!');
-        return;
-    }
-
-    const guncelVeri = { urunID, urunAdi, birimFiyat, stokAdedi, kritikStokSeviyesi };
-
-    try {
-        const yanit = await fetch(`${API_BASE}/products`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(guncelVeri)
-        });
-        const sonuc = await yanit.json();
-        if (sonuc.success) {
-            alert('Ürün başarıyla güncellendi!');
-            modalKapat();
-            await envanteriGetir();
-            filtreUygula();
-        } else {
-            alert('Sunucu Hatası: ' + sonuc.message);
-        }
-    } catch (hata) {
-        console.error('Güncelleme hatası:', hata);
-        alert('Sunucuya bağlanılamadı.');
-    }
-});
-
-  async function urunSil(id) {
-    if (!confirm(`${id} ID'li ürünü silmek istediğinize emin misiniz?`)) return;
-    try {
-      await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
-      await envanteriGetir();
-      filtreUygula();
-    } catch (hata) {
-      console.error('Silme hatası:', hata);
-    }
-  }
-
- 
-  // 13. GÜN: Yeni Ürün Ekleme Validasyonu (Güvenlik Kontrolü)
-document.querySelector('#yeniUrunFormu').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const urunAdi = document.querySelector('#urunAdi').value.trim();
-    const kategoriID = parseInt(document.querySelector('#kategoriId').value);
-    const birimFiyat = parseFloat(document.querySelector('#birimFiyat').value);
-    const stokAdedi = parseInt(document.querySelector('#stokAdedi').value);
-    const kritikStokSeviyesi = parseInt(document.querySelector('#kritikStok').value);
-
-    // Kontroller: Hatalıysa durdur ve uyar
-    if (urunAdi.length < 2) {
-        alert('Hata: Ürün adı en az 2 harf olmalı, boş bırakılamaz!');
-        return;
-    }
-    if (isNaN(kategoriID) || kategoriID <= 0) {
-        alert('Hata: Lütfen bir kategori seçiniz!');
-        return;
-    }
-    if (isNaN(birimFiyat) || birimFiyat <= 0) {
-        alert('Hata: Fiyat 0 veya eksi olamaz!');
-        return;
-    }
-    if (isNaN(stokAdedi) || stokAdedi < 0) {
-        alert('Hata: Stok adedi eksi (negatif) olamaz!');
-        return;
-    }
-    if (isNaN(kritikStokSeviyesi) || kritikStokSeviyesi < 1) {
-        alert('Hata: Kritik stok eşiği en az 1 olmalıdır!');
-        return;
-    }
-
-    const yeniUrun = { urunAdi, kategoriID, birimFiyat, stokAdedi, kritikStokSeviyesi };
-
-    try {
-        const yanit = await fetch(`${API_BASE}/products`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(yeniUrun)
-        });
-        const sonuc = await yanit.json();
-        if (sonuc.success) {
-            alert('Ürün başarıyla eklendi!');
-            document.querySelector('#yeniUrunFormu').reset();
-            await envanteriGetir();
-            filtreUygula();
-        } else {
-            alert('Sunucu Hatası: ' + sonuc.message);
-        }
-    } catch (hata) {
-        console.error('Ekleme hatası:', hata);
-        alert('Sunucuya bağlanılamadı.');
-    }
-});
-  document.addEventListener('DOMContentLoaded', () => {
-    envanteriGetir();
-    kategorileriGetir();
-    dashboardVerileriniGetir();
-  });
-  
-</script>
+    <!-- 16. GÜN: ES6 Modüler Giriş Noktası -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
